@@ -50,6 +50,25 @@ class ANNSuite extends FunSuite with TestSparkContext {
 
     runAssertions(localHashTables, localNeighbors)
   }
+
+  test("compute jaccard nearest neighbors as a batch") {
+    val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
+
+    val ann =
+      new ANN(dimensions, "jaccard")
+        .setTables(1)
+        .setSignatureLength(8)
+        .setBands(4)
+        .setPrimeModulus(739)
+
+    val model = ann.train(vectors)
+    val neighbors = model.neighbors(10)
+
+    val localHashTables = model.hashTables.collect()
+    val localNeighbors = neighbors.collect()
+
+    runAssertions(localHashTables, localNeighbors)
+  }
 }
 
 object ANNSuite {

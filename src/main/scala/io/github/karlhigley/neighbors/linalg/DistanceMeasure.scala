@@ -46,3 +46,21 @@ private[neighbors] final object EuclideanDistance extends DistanceMeasure {
     Vectors.sqdist(v1, v2)
   }
 }
+
+private[neighbors] final object JaccardDistance extends DistanceMeasure {
+
+  /**
+   * Compute Jaccard distance between vectors
+   *
+   * Since MLlib doesn't support binary vectors, this uses
+   * sparse vectors and considers any active (i.e. non-zero)
+   * index to represent a member of the set
+   */
+  def compute(v1: SparseVector, v2: SparseVector): Double = {
+    val indices1 = v1.indices.toSet
+    val indices2 = v2.indices.toSet
+    val intersection = indices1.intersect(indices2)
+    val union = indices1.union(indices2)
+    1.0 - intersection.size / union.size
+  }
+}

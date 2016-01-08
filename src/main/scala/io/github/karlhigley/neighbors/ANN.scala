@@ -7,9 +7,10 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.storage.StorageLevel
 
-import io.github.karlhigley.neighbors.candidates.{ CandidateStrategy, SimpleCandidateStrategy }
-import io.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance }
+import io.github.karlhigley.neighbors.candidates.{ BandingCandidateStrategy, CandidateStrategy, SimpleCandidateStrategy }
+import io.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, JaccardDistance }
 import io.github.karlhigley.neighbors.lsh.LSHFunction
+import io.github.karlhigley.neighbors.lsh.MinhashFunction
 import io.github.karlhigley.neighbors.lsh.ScalarRandomProjectionFunction
 import io.github.karlhigley.neighbors.lsh.SignRandomProjectionFunction
 
@@ -25,6 +26,8 @@ class ANN private (
     private var numTables: Int,
     private var signatureLength: Int,
     private var bucketWidth: Double,
+    private var primeModulus: Int,
+    private var numBands: Int,
     private var randomSeed: Int
 ) {
 
@@ -38,6 +41,8 @@ class ANN private (
       numTables = 1,
       signatureLength = 16,
       bucketWidth = 0.0,
+      primeModulus = 0,
+      numBands = 0,
       randomSeed = Random.nextInt()
     )
   }
@@ -92,6 +97,46 @@ class ANN private (
   }
 
   /**
+   * Common prime modulus used by minhash functions.
+   */
+  def getPrimeModulus(): Int = {
+    primeModulus
+  }
+
+  /**
+   * Common prime modulus used by minhash functions.
+   *
+   * Should be larger than the number of dimensions.
+   */
+  def setPrimeModulus(prime: Int): this.type = {
+    require(
+      measureName == "jaccard",
+      "Prime modulus only applies when distance measure is jaccard."
+    )
+    primeModulus = prime
+    this
+  }
+
+  /**
+   * Number of bands to use for minhash candidate pair generation
+   */
+  def getBands(): Int = {
+    numBands
+  }
+
+  /**
+   * Number of bands to use for minhash candidate pair generation
+   */
+  def setBands(bands: Int): this.type = {
+    require(
+      measureName == "jaccard",
+      "Number of bands only applies when distance measure is jaccard."
+    )
+    numBands = bands
+    this
+  }
+
+  /**
    * Random seed used to generate hash functions
    */
   def getRandomSeed(): Int = {
@@ -139,9 +184,22 @@ class ANN private (
             random
           )).toArray
       }
+      case "jaccard" => {
+        require(primeModulus > 0, "Prime modulus must be greater than zero.")
+        require(numBands > 0, "Number of bands must be greater than zero.")
+        require(
+          signatureLength % numBands == 0,
+          "Number of bands must evenly divide signature length."
+        )
+
+        distanceMeasure = JaccardDistance
+        hashFunctions = (1 to numTables).map(i =>
+          MinhashFunction.generate(origDimension, signatureLength, primeModulus, random)).toArray
+        candidateStrategy = new BandingCandidateStrategy(10, persistenceLevel)
+      }
       case other: Any =>
         throw new IllegalArgumentException(
-          s"Only cosine and euclidean distances are supported but got $other."
+          s"Only cosine, euclidean, and jaccard distances are supported but got $other."
         )
     }
 
