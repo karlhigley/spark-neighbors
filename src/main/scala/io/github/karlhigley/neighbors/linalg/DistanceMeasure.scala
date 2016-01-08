@@ -35,3 +35,14 @@ private[neighbors] final object CosineDistance extends DistanceMeasure {
     1.0 - (math.abs(dotProduct) / norms)
   }
 }
+
+private[neighbors] final object EuclideanDistance extends DistanceMeasure {
+
+  /**
+   * Compute Euclidean distance between vectors using
+   * MLlib's public vector distance functionality
+   */
+  def compute(v1: SparseVector, v2: SparseVector): Double = {
+    Vectors.sqdist(v1, v2)
+  }
+}

@@ -8,8 +8,9 @@ import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.storage.StorageLevel
 
 import io.github.karlhigley.neighbors.candidates.{ CandidateStrategy, SimpleCandidateStrategy }
-import io.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure }
+import io.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance }
 import io.github.karlhigley.neighbors.lsh.LSHFunction
+import io.github.karlhigley.neighbors.lsh.ScalarRandomProjectionFunction
 import io.github.karlhigley.neighbors.lsh.SignRandomProjectionFunction
 
 /**
@@ -23,6 +24,7 @@ class ANN private (
     private var origDimension: Int,
     private var numTables: Int,
     private var signatureLength: Int,
+    private var bucketWidth: Double,
     private var randomSeed: Int
 ) {
 
@@ -35,6 +37,7 @@ class ANN private (
       measureName = measure,
       numTables = 1,
       signatureLength = 16,
+      bucketWidth = 0.0,
       randomSeed = Random.nextInt()
     )
   }
@@ -66,6 +69,25 @@ class ANN private (
    */
   def setSignatureLength(length: Int): this.type = {
     signatureLength = length
+    this
+  }
+
+  /**
+   * Bucket width (commonly named "W") used by scalar-random-projection hash functions.
+   */
+  def getBucketWidth(): Double = {
+    bucketWidth
+  }
+
+  /**
+   * Bucket width (commonly named "W") used by scalar-random-projection hash functions.
+   */
+  def setBucketWidth(width: Double): this.type = {
+    require(
+      measureName == "euclidean",
+      "Bucket width only applies when distance measure is euclidean."
+    )
+    bucketWidth = width
     this
   }
 
@@ -105,9 +127,21 @@ class ANN private (
         hashFunctions = (1 to numTables).map(i =>
           SignRandomProjectionFunction.generate(origDimension, signatureLength, random)).toArray
       }
+      case "euclidean" => {
+        require(bucketWidth > 0.0, "Bucket width must be greater than zero.")
+
+        distanceMeasure = EuclideanDistance
+        hashFunctions = (1 to numTables).map(i =>
+          ScalarRandomProjectionFunction.generate(
+            origDimension,
+            signatureLength,
+            bucketWidth,
+            random
+          )).toArray
+      }
       case other: Any =>
         throw new IllegalArgumentException(
-          s"Only cosine distance is supported but got $other."
+          s"Only cosine and euclidean distances are supported but got $other."
         )
     }
 

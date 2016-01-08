@@ -33,6 +33,25 @@ class ANNSuite extends FunSuite with TestSparkContext {
     runAssertions(localHashTables, localNeighbors)
   }
 
+  test("compute euclidean nearest neighbors as a batch") {
+    val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
+
+    val ann =
+      new ANN(dimensions, "euclidean")
+        .setTables(1)
+        .setSignatureLength(4)
+        .setBucketWidth(2)
+
+    val model = ann.train(vectors)
+    val neighbors = model.neighbors(10)
+
+    val localHashTables = model.hashTables.collect()
+    val localNeighbors = neighbors.collect()
+
+    runAssertions(localHashTables, localNeighbors)
+  }
+}
+
 object ANNSuite {
   def runAssertions(
     hashTables: Array[_ <: HashTableEntry[_]],
