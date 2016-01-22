@@ -45,10 +45,10 @@ class ANNModel private[neighbors] (
         case (id1, (id2, vector1)) => (id2, (id1, vector1))
       }
       .join(vectors)
-      .map {
+      .flatMap {
         case (id2, ((id1, vector1), vector2)) =>
           val distance = measure.compute(vector1, vector2)
-          (id1, (id2, distance))
+          Array((id1, (id2, distance)), (id2, (id1, distance)))
       }
   }
 }

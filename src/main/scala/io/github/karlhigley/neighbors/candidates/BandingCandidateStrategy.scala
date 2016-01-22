@@ -41,7 +41,7 @@ private[neighbors] class BandingCandidateStrategy(
 
     bandEntries.persist(persistenceLevel)
     bandEntries.join(bandEntries).flatMap {
-      case (_, (id1, id2)) if (id1 != id2) => Some((id1, id2))
+      case (_, (id1, id2)) if (id1 < id2) => Some((id1, id2))
       case _ => None
     }
   }
