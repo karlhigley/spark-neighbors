@@ -47,6 +47,20 @@ private[neighbors] final object EuclideanDistance extends DistanceMeasure {
   }
 }
 
+private[neighbors] final object HammingDistance extends DistanceMeasure {
+
+  /**
+   * Compute Hamming distance between vectors
+   *
+   * Since MLlib doesn't support binary vectors, this uses
+   * sparse vectors and considers any active (i.e. non-zero)
+   * index to represent a set bit
+   */
+  def compute(v1: SparseVector, v2: SparseVector): Double = {
+    v1.indices.intersect(v2.indices).size.toDouble
+  }
+}
+
 private[neighbors] final object JaccardDistance extends DistanceMeasure {
 
   /**

@@ -16,6 +16,23 @@ class ANNSuite extends FunSuite with TestSparkContext {
 
   val localVectors = generateRandomVectors(numVectors, dimensions, density)
 
+  test("compute hamming nearest neighbors as a batch") {
+    val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
+
+    val ann =
+      new ANN(dimensions, "hamming")
+        .setTables(1)
+        .setSignatureLength(16)
+
+    val model = ann.train(vectors)
+    val neighbors = model.neighbors(10)
+
+    val localHashTables = model.hashTables.collect()
+    val localNeighbors = neighbors.collect()
+
+    runAssertions(localHashTables, localNeighbors)
+  }
+
   test("compute cosine nearest neighbors as a batch") {
     val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
 

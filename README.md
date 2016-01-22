@@ -8,11 +8,24 @@ Spark itself doesn't yet support locality-sensitive hashing or nearest neighbor 
 
 ### Features
 - Batch computation of the nearest neighbors for each point in a dataset
+- Hamming distance via bit sampling LSH
 - Cosine distance via sign-random-projection LSH
 - Euclidean distance via scalar-random-projection LSH
 - Jaccard distance via Minhash LSH
 
 ### Usage
+
+Hamming distance:
+
+```scala
+val ann =
+  new ANN(dimensions, "hamming")
+    .setTables(4)
+    .setSignatureLength(64)
+
+val model = ann.train(vectors)
+val neighbors = model.neighbors(10)
+```
 
 Cosine distance:
 
