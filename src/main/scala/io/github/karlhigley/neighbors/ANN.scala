@@ -8,8 +8,9 @@ import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.storage.StorageLevel
 
 import io.github.karlhigley.neighbors.candidates.{ BandingCandidateStrategy, CandidateStrategy, SimpleCandidateStrategy }
-import io.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, JaccardDistance }
+import io.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, HammingDistance, JaccardDistance }
 import io.github.karlhigley.neighbors.lsh.LSHFunction
+import io.github.karlhigley.neighbors.lsh.BitSamplingFunction
 import io.github.karlhigley.neighbors.lsh.MinhashFunction
 import io.github.karlhigley.neighbors.lsh.ScalarRandomProjectionFunction
 import io.github.karlhigley.neighbors.lsh.SignRandomProjectionFunction
@@ -164,11 +165,16 @@ class ANN private (
   ): ANNModel = {
     var hashFunctions: Array[LSHFunction[_]] = Array()
     var candidateStrategy: CandidateStrategy = new SimpleCandidateStrategy(persistenceLevel)
-    var distanceMeasure: DistanceMeasure = CosineDistance
+    var distanceMeasure: DistanceMeasure = HammingDistance
     val random = new JavaRandom(randomSeed)
 
     measureName.toLowerCase match {
+      case "hamming" => {
+        hashFunctions = (1 to numTables).map(i =>
+          BitSamplingFunction.generate(origDimension, signatureLength, random)).toArray
+      }
       case "cosine" => {
+        distanceMeasure = CosineDistance
         hashFunctions = (1 to numTables).map(i =>
           SignRandomProjectionFunction.generate(origDimension, signatureLength, random)).toArray
       }
