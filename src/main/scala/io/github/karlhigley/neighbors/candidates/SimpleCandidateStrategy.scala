@@ -34,7 +34,7 @@ private[neighbors] class SimpleCandidateStrategy(
 
     entries.persist(persistenceLevel)
     entries.join(entries).flatMap {
-      case ((table, signature), (id1, id2)) if (id1 != id2) => Some((id1, id2))
+      case (_, (id1, id2)) if (id1 < id2) => Some((id1, id2))
       case _ => None
     }
   }
