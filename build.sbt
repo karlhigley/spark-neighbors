@@ -1,5 +1,7 @@
 name := "spark-neighbors"
 
+organization := "io.github.karlhigley"
+
 version := "0.0.1"
 
 scalaVersion := "2.10.5"
