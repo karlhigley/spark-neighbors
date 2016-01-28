@@ -85,3 +85,7 @@ Scalar random projection:
 Minhash:
 - Broder, A. "[On the resemblance and containment of documents.](http://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/broder97resemblance.pdf)" Compression and Complexity of Sequences: Proceedings, 1997.
 - Broder, et al. "[Min-wise independent permutations.](http://www.cs.princeton.edu/courses/archive/spring04/cos598B/bib/BroderCFM-minwise.pdf)" STOC, 1998.
+
+Survey papers:
+- Loic Pauleve, Herve Jegou, Laurent Amsaleg. "[Locality sensitive hashing: a comparison of hash function types and querying mechanisms.](https://hal.inria.fr/file/index/docid/567191/filename/paper.pdf)" Pattern Recognition Letters, 2010.
+- Jingdong Wang, Heng Tao Shen, Jingkuan Song, and Jianqiu Ji. "[Hashing for similarity search: A survey.](http://arxiv.org/pdf/1408.2927.pdf)" CoRR, abs/1408.2927, 2014.
