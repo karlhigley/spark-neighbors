@@ -15,53 +15,51 @@ Spark itself doesn't yet support locality-sensitive hashing or nearest neighbor 
 
 ### Usage
 
-Hamming distance:
+ANN models are created using the builder pattern:
 
 ```scala
-val ann =
-  new ANN(dimensions, "hamming")
+val annModel =
+  new ANN(dimensions = 1000, measure = "hamming")
     .setTables(4)
     .setSignatureLength(64)
+    .train(points)
+```
 
-val model = ann.train(vectors)
+An ANN model can compute a variable number of approximate nearest neighbors:
+
+```scala
 val neighbors = model.neighbors(10)
 ```
 
-Cosine distance:
+#### Distance Measures and Parameters
+
+The supported distance measures are "hamming", "cosine", "euclidean", and "jaccard". All distance measures allow the number of hash tables and the length of the computed hash signatures to be configured as above. The hashing schemes for Euclidean and Jaccard distances have some additional configurable parameters:
+
+##### Euclidean Distance
+
+This hash function depends on a bucket or quantization width. Higher widths lead to signatures that are more similar:
 
 ```scala
-val ann =
-  new ANN(dimensions, "cosine")
+val annModel =
+  new ANN(dimensions = 1000, measure = "euclidean")
     .setTables(4)
     .setSignatureLength(64)
-
-val model = ann.train(vectors)
-val neighbors = model.neighbors(10)
-```
-
-Euclidean distance:
-```scala
-val ann =
-  new ANN(dimensions, "euclidean")
-    .setTables(4)
-    .setSignatureLength(32)
     .setBucketWidth(5)
-
-val model = ann.train(vectors)
-val neighbors = model.neighbors(10)
+    .train(points)
 ```
 
-Jaccard distance:
+##### Jaccard Distance
+
+Minhashing requires two additional parameters: a prime larger than the number of input dimensions and the number of minhash bands. The prime is used in the permutation functions that generate minhash signatures, and the number of bands is used in the process of generating candidate pairs from the signatures.
+
 ```scala
-val ann =
-  new ANN(dimensions, "jaccard")
+val annModel =
+  new ANN(dimensions = 1000, measure = "jaccard")
     .setTables(4)
     .setSignatureLength(128)
-    .setBands(16)
     .setPrimeModulus(739)
-
-val model = ann.train(vectors)
-val neighbors = model.neighbors(10)
+    .setBands(16)
+    .train(points)
 ```
 
 ### Future Possibilities
