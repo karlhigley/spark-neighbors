@@ -155,12 +155,12 @@ class ANN private (
   /**
    * Build an ANN model using the given dataset.
    *
-   * @param vectors    RDD of vectors paired with IDs.
+   * @param points    RDD of vectors paired with IDs.
    *                   IDs must be unique and >= 0.
    * @return ANNModel containing computed hash tables
    */
   def train(
-    vectors: RDD[(Int, SparseVector)],
+    points: RDD[(Int, SparseVector)],
     persistenceLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK
   ): ANNModel = {
     var hashFunctions: Array[LSHFunction[_]] = Array()
@@ -210,7 +210,7 @@ class ANN private (
     }
 
     ANNModel.train(
-      vectors,
+      points,
       hashFunctions,
       candidateStrategy,
       distanceMeasure,
