@@ -10,21 +10,21 @@ import io.github.karlhigley.neighbors.lsh.HashTableEntry
 class ANNSuite extends FunSuite with TestSparkContext {
   import ANNSuite._
 
-  val numVectors = 1000
+  val numPoints = 1000
   val dimensions = 100
   val density = 0.5
 
-  val localVectors = generateRandomVectors(numVectors, dimensions, density)
+  val localPoints = generateRandomPoints(numPoints, dimensions, density)
 
   test("compute hamming nearest neighbors as a batch") {
-    val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
+    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
 
     val ann =
       new ANN(dimensions, "hamming")
         .setTables(1)
         .setSignatureLength(16)
 
-    val model = ann.train(vectors)
+    val model = ann.train(points)
     val neighbors = model.neighbors(10)
 
     val localHashTables = model.hashTables.collect()
@@ -34,14 +34,14 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("compute cosine nearest neighbors as a batch") {
-    val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
+    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
 
     val ann =
       new ANN(dimensions, "cosine")
         .setTables(1)
         .setSignatureLength(4)
 
-    val model = ann.train(vectors)
+    val model = ann.train(points)
     val neighbors = model.neighbors(10)
 
     val localHashTables = model.hashTables.collect()
@@ -51,7 +51,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("compute euclidean nearest neighbors as a batch") {
-    val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
+    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
 
     val ann =
       new ANN(dimensions, "euclidean")
@@ -59,7 +59,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
         .setSignatureLength(4)
         .setBucketWidth(2)
 
-    val model = ann.train(vectors)
+    val model = ann.train(points)
     val neighbors = model.neighbors(10)
 
     val localHashTables = model.hashTables.collect()
@@ -69,7 +69,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("compute jaccard nearest neighbors as a batch") {
-    val vectors = sc.parallelize(localVectors.zipWithIndex.map(_.swap))
+    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
 
     val ann =
       new ANN(dimensions, "jaccard")
@@ -78,7 +78,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
         .setBands(4)
         .setPrimeModulus(739)
 
-    val model = ann.train(vectors)
+    val model = ann.train(points)
     val neighbors = model.neighbors(10)
 
     val localHashTables = model.hashTables.collect()
@@ -114,17 +114,17 @@ object ANNSuite {
     }
   }
 
-  def generateRandomVectors(quantity: Int, dimensions: Int, density: Double) = {
+  def generateRandomPoints(quantity: Int, dimensions: Int, density: Double) = {
     val numElements = math.floor(dimensions * density).toInt
-    val vectors = new Array[SparseVector](quantity)
+    val points = new Array[SparseVector](quantity)
     var i = 0
     while (i < quantity) {
       val indices = generateIndices(numElements, dimensions)
       val values = generateValues(numElements)
-      vectors(i) = new SparseVector(dimensions, indices, values)
+      points(i) = new SparseVector(dimensions, indices, values)
       i += 1
     }
-    vectors
+    points
   }
 
   def generateIndices(quantity: Int, dimensions: Int) = {
