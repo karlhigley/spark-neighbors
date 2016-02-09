@@ -86,6 +86,31 @@ class ANNSuite extends FunSuite with TestSparkContext {
 
     runAssertions(localHashTables, localNeighbors)
   }
+
+  test("with multiple hash tables neighbors don't contain duplicates") {
+    val withDuplicates = localPoints ++ localPoints
+    val points = sc.parallelize(withDuplicates.zipWithIndex.map(_.swap))
+
+    val ann =
+      new ANN(dimensions, "hamming")
+        .setTables(4)
+        .setSignatureLength(16)
+
+    val model = ann.train(points)
+    val neighbors = model.neighbors(10)
+
+    val localNeighbors = neighbors.collect()
+
+    localNeighbors.foreach {
+      case (id1, distances) => {
+        val neighborSet = distances.map {
+          case (id2, distance) => id2
+        }.toSet
+
+        assert(neighborSet.size == distances.size)
+      }
+    }
+  }
 }
 
 object ANNSuite {
