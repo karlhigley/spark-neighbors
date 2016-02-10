@@ -38,7 +38,7 @@ class ANNModel private[neighbors] (
    * using the supplied distance measure.
    */
   private def computeDistances(candidates: RDD[(Int, Int)]): RDD[(Int, (Int, Double))] = {
-    points.persist(persistenceLevel)
+    candidates.persist(persistenceLevel)
     candidates
       .join(points)
       .map {
