@@ -15,7 +15,6 @@ import io.github.karlhigley.neighbors.lsh.{ HashTableEntry, LSHFunction, Signatu
  */
 class ANNModel private[neighbors] (
     val points: RDD[(Int, SparseVector)],
-    val numTables: Int,
     private[neighbors] val hashTables: RDD[_ <: HashTableEntry[_]],
     private[neighbors] val candidateStrategy: CandidateStrategy,
     private[neighbors] val measure: DistanceMeasure,
@@ -68,7 +67,6 @@ object ANNModel {
     persistenceLevel: StorageLevel
   ): ANNModel = {
 
-    val numTables = hashFunctions.size
     val indHashFunctions = hashFunctions.zipWithIndex
     val hashTables: RDD[_ <: HashTableEntry[_]] = points.flatMap {
       case (id, vector) =>
@@ -79,7 +77,6 @@ object ANNModel {
     }
     new ANNModel(
       points,
-      numTables,
       hashTables,
       CandidateStrategy,
       measure,
