@@ -1,5 +1,6 @@
 package io.github.karlhigley.neighbors.candidates
 
+import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.rdd.RDD
 
 import io.github.karlhigley.neighbors.lsh.HashTableEntry
@@ -12,5 +13,5 @@ import io.github.karlhigley.neighbors.lsh.HashTableEntry
  * banding (for minhash LSH).
  */
 private[neighbors] abstract class CandidateStrategy {
-  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Int, Int)]
+  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[((Int, SparseVector), (Int, SparseVector))]
 }

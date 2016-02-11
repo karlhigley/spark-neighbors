@@ -2,6 +2,8 @@ package io.github.karlhigley.neighbors.lsh
 
 import scala.collection.immutable.BitSet
 
+import org.apache.spark.mllib.linalg.SparseVector
+
 /**
  * This wrapper class allows ANNModel to ignore the
  * type of the hash signatures in its hash tables.
@@ -33,16 +35,19 @@ private[neighbors] sealed abstract class HashTableEntry[+S <: Signature[_]] {
   val id: Int
   val table: Int
   val signature: S
+  val point: SparseVector
 }
 
 private[neighbors] final case class BitHashTableEntry(
   id: Int,
   table: Int,
-  signature: BitSignature
+  signature: BitSignature,
+  point: SparseVector
 ) extends HashTableEntry[BitSignature]
 
 private[neighbors] final case class IntHashTableEntry(
   id: Int,
   table: Int,
-  signature: IntSignature
+  signature: IntSignature,
+  point: SparseVector
 ) extends HashTableEntry[IntSignature]
