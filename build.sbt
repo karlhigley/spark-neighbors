@@ -1,6 +1,6 @@
 lazy val root = (project in file(".")).
   settings(
-    spName := "io.github.karlhigley/spark-neighbors",
+    spName := "karlhigley/spark-neighbors",
     version := "0.1.0",
     scalaVersion := "2.10.5",
     sparkVersion := "1.6.0",
