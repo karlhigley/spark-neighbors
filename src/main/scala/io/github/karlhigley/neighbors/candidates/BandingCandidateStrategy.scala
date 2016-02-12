@@ -14,8 +14,7 @@ import io.github.karlhigley.neighbors.lsh.{ BitSignature, HashTableEntry, IntSig
  * (See Mining Massive Datasets, Ch. 3)
  */
 private[neighbors] class BandingCandidateStrategy(
-    bands: Int,
-    persistenceLevel: StorageLevel
+    bands: Int
 ) extends CandidateStrategy with Serializable {
 
   /**
@@ -40,7 +39,6 @@ private[neighbors] class BandingCandidateStrategy(
       }
     })
 
-    bandEntries.persist(persistenceLevel)
     bandEntries.join(bandEntries).flatMap {
       case (_, ((id1, point1), (id2, point2))) if (id1 < id2) => Some(((id1, point1), (id2, point2)))
       case _ => None

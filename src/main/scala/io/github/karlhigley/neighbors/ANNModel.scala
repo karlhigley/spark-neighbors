@@ -16,8 +16,7 @@ import io.github.karlhigley.neighbors.lsh.{ HashTableEntry, LSHFunction, Signatu
 class ANNModel private[neighbors] (
     private[neighbors] val hashTables: RDD[_ <: HashTableEntry[_]],
     private[neighbors] val candidateStrategy: CandidateStrategy,
-    private[neighbors] val measure: DistanceMeasure,
-    val persistenceLevel: StorageLevel
+    private[neighbors] val measure: DistanceMeasure
 ) extends Serializable {
 
   /**
@@ -67,11 +66,11 @@ object ANNModel {
             hashFunc.hashTableEntry(id, table, vector)
         }
     }
+    hashTables.persist(persistenceLevel)
     new ANNModel(
       hashTables,
       CandidateStrategy,
-      measure,
-      persistenceLevel
+      measure
     )
   }
 }

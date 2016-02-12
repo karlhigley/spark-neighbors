@@ -14,9 +14,7 @@ import io.github.karlhigley.neighbors.lsh.{ BitSignature, HashTableEntry, IntSig
  *
  * (See Mining Massive Datasets, Ch. 3)
  */
-private[neighbors] class SimpleCandidateStrategy(
-    persistenceLevel: StorageLevel
-) extends CandidateStrategy with Serializable {
+private[neighbors] class SimpleCandidateStrategy extends CandidateStrategy with Serializable {
 
   /**
    * Identify candidates by finding a signature match
@@ -33,7 +31,6 @@ private[neighbors] class SimpleCandidateStrategy(
       ((entry.table, MurmurHash3.arrayHash(sigElements)), (entry.id, entry.point))
     })
 
-    entries.persist(persistenceLevel)
     entries.join(entries).flatMap {
       case (_, ((id1, point1), (id2, point2))) if (id1 < id2) => Some(((id1, point1), (id2, point2)))
       case _ => None
