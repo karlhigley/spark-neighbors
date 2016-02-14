@@ -14,11 +14,9 @@ import io.github.karlhigley.neighbors.lsh.{ HashTableEntry, LSHFunction, Signatu
  * for each supplied vector.
  */
 class ANNModel private[neighbors] (
-    val points: RDD[(Int, SparseVector)],
     private[neighbors] val hashTables: RDD[_ <: HashTableEntry[_]],
     private[neighbors] val candidateStrategy: CandidateStrategy,
-    private[neighbors] val measure: DistanceMeasure,
-    val persistenceLevel: StorageLevel
+    private[neighbors] val measure: DistanceMeasure
 ) extends Serializable {
 
   /**
@@ -27,7 +25,7 @@ class ANNModel private[neighbors] (
    * the actual distance between candidate pairs.
    */
   def neighbors(quantity: Int): RDD[(Int, Array[(Int, Double)])] = {
-    val candidates = candidateStrategy.identify(hashTables).distinct()
+    val candidates = candidateStrategy.identify(hashTables).repartition(hashTables.getNumPartitions).distinct()
     val neighbors = computeDistances(candidates)
     neighbors.topByKey(quantity)(ANNModel.ordering)
   }
@@ -36,19 +34,12 @@ class ANNModel private[neighbors] (
    * Compute the actual distance between candidate pairs
    * using the supplied distance measure.
    */
-  private def computeDistances(candidates: RDD[(Int, Int)]): RDD[(Int, (Int, Double))] = {
-    candidates.persist(persistenceLevel)
-    candidates
-      .join(points)
-      .map {
-        case (id1, (id2, vector1)) => (id2, (id1, vector1))
-      }
-      .join(points)
-      .flatMap {
-        case (id2, ((id1, vector1), vector2)) =>
-          val distance = measure.compute(vector1, vector2)
-          Array((id1, (id2, distance)), (id2, (id1, distance)))
-      }
+  private def computeDistances(candidates: RDD[((Int, SparseVector), (Int, SparseVector))]): RDD[(Int, (Int, Double))] = {
+    candidates.flatMap {
+      case ((id1, vector1), (id2, vector2)) =>
+        val distance = measure.compute(vector1, vector2)
+        Array((id1, (id2, distance)), (id2, (id1, distance)))
+    }
   }
 }
 
@@ -75,12 +66,11 @@ object ANNModel {
             hashFunc.hashTableEntry(id, table, vector)
         }
     }
+    hashTables.persist(persistenceLevel)
     new ANNModel(
-      points,
       hashTables,
       CandidateStrategy,
-      measure,
-      persistenceLevel
+      measure
     )
   }
 }

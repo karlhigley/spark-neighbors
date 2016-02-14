@@ -36,7 +36,7 @@ private[neighbors] class MinhashFunction(
    * Build a hash table entry for the supplied vector
    */
   def hashTableEntry(id: Int, table: Int, v: SparseVector): IntHashTableEntry = {
-    IntHashTableEntry(id, table, signature(v))
+    IntHashTableEntry(id, table, signature(v), v)
   }
 }
 

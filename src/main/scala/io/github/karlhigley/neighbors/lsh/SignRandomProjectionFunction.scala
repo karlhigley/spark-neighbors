@@ -38,7 +38,7 @@ private[neighbors] class SignRandomProjectionFunction(
    * Build a hash table entry for the supplied vector
    */
   def hashTableEntry(id: Int, table: Int, v: SparseVector): BitHashTableEntry = {
-    BitHashTableEntry(id, table, signature(v))
+    BitHashTableEntry(id, table, signature(v), v)
   }
 }
 

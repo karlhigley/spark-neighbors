@@ -2,6 +2,7 @@ package io.github.karlhigley.neighbors.candidates
 
 import scala.util.hashing.MurmurHash3
 
+import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 
@@ -13,15 +14,13 @@ import io.github.karlhigley.neighbors.lsh.{ BitSignature, HashTableEntry, IntSig
  *
  * (See Mining Massive Datasets, Ch. 3)
  */
-private[neighbors] class SimpleCandidateStrategy(
-    persistenceLevel: StorageLevel
-) extends CandidateStrategy with Serializable {
+private[neighbors] class SimpleCandidateStrategy extends CandidateStrategy with Serializable {
 
   /**
    * Identify candidates by finding a signature match
    * in any hash table.
    */
-  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Int, Int)] = {
+  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[((Int, SparseVector), (Int, SparseVector))] = {
     val entries = hashTables.map(entry => {
       val sigElements = entry.signature match {
         case BitSignature(values) => values.toArray
@@ -29,12 +28,11 @@ private[neighbors] class SimpleCandidateStrategy(
       }
       // Arrays are mutable and can't be used in RDD keys
       // Use a hash value (i.e. an int) as a substitute
-      ((entry.table, MurmurHash3.arrayHash(sigElements)), entry.id)
+      ((entry.table, MurmurHash3.arrayHash(sigElements)), (entry.id, entry.point))
     })
 
-    entries.persist(persistenceLevel)
     entries.join(entries).flatMap {
-      case (_, (id1, id2)) if (id1 < id2) => Some((id1, id2))
+      case (_, ((id1, point1), (id2, point2))) if (id1 < id2) => Some(((id1, point1), (id2, point2)))
       case _ => None
     }
   }

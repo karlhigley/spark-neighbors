@@ -164,7 +164,7 @@ class ANN private (
     persistenceLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK
   ): ANNModel = {
     var hashFunctions: Array[LSHFunction[_]] = Array()
-    var candidateStrategy: CandidateStrategy = new SimpleCandidateStrategy(persistenceLevel)
+    var candidateStrategy: CandidateStrategy = new SimpleCandidateStrategy
     var distanceMeasure: DistanceMeasure = HammingDistance
     val random = new JavaRandom(randomSeed)
 
@@ -201,7 +201,7 @@ class ANN private (
         distanceMeasure = JaccardDistance
         hashFunctions = (1 to numTables).map(i =>
           MinhashFunction.generate(origDimension, signatureLength, primeModulus, random)).toArray
-        candidateStrategy = new BandingCandidateStrategy(10, persistenceLevel)
+        candidateStrategy = new BandingCandidateStrategy(10)
       }
       case other: Any =>
         throw new IllegalArgumentException(
