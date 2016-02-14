@@ -1,4 +1,4 @@
-package io.github.karlhigley.neighbors
+package com.github.karlhigley.neighbors
 
 import java.util.{ Random => JavaRandom }
 import scala.util.Random
@@ -7,13 +7,13 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.storage.StorageLevel
 
-import io.github.karlhigley.neighbors.candidates.{ BandingCandidateStrategy, CandidateStrategy, SimpleCandidateStrategy }
-import io.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, HammingDistance, JaccardDistance }
-import io.github.karlhigley.neighbors.lsh.LSHFunction
-import io.github.karlhigley.neighbors.lsh.BitSamplingFunction
-import io.github.karlhigley.neighbors.lsh.MinhashFunction
-import io.github.karlhigley.neighbors.lsh.ScalarRandomProjectionFunction
-import io.github.karlhigley.neighbors.lsh.SignRandomProjectionFunction
+import com.github.karlhigley.neighbors.candidates.{ BandingCandidateStrategy, CandidateStrategy, SimpleCandidateStrategy }
+import com.github.karlhigley.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, HammingDistance, JaccardDistance }
+import com.github.karlhigley.neighbors.lsh.LSHFunction
+import com.github.karlhigley.neighbors.lsh.BitSamplingFunction
+import com.github.karlhigley.neighbors.lsh.MinhashFunction
+import com.github.karlhigley.neighbors.lsh.ScalarRandomProjectionFunction
+import com.github.karlhigley.neighbors.lsh.SignRandomProjectionFunction
 
 /**
  * Approximate Nearest Neighbors (ANN) using locality-sensitive hashing (LSH)

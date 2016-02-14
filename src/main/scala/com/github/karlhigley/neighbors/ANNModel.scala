@@ -1,13 +1,13 @@
-package io.github.karlhigley.neighbors
+package com.github.karlhigley.neighbors
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.mllib.rdd.MLPairRDDFunctions._
 import org.apache.spark.storage.StorageLevel
 
-import io.github.karlhigley.neighbors.candidates.CandidateStrategy
-import io.github.karlhigley.neighbors.linalg.DistanceMeasure
-import io.github.karlhigley.neighbors.lsh.{ HashTableEntry, LSHFunction, Signature }
+import com.github.karlhigley.neighbors.candidates.CandidateStrategy
+import com.github.karlhigley.neighbors.linalg.DistanceMeasure
+import com.github.karlhigley.neighbors.lsh.{ HashTableEntry, LSHFunction, Signature }
 
 /**
  * Model containing hash tables produced by computing signatures

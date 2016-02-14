@@ -1,4 +1,4 @@
-package io.github.karlhigley.neighbors.linalg
+package com.github.karlhigley.neighbors.linalg
 
 import java.util.Random
 

@@ -1,4 +1,4 @@
-package io.github.karlhigley.neighbors
+package com.github.karlhigley.neighbors
 
 import org.scalatest.{ BeforeAndAfterAll, Suite }
 

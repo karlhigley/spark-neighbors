@@ -1,11 +1,11 @@
-package io.github.karlhigley.neighbors
+package com.github.karlhigley.neighbors
 
 import scala.util.Random
 
 import org.apache.spark.mllib.linalg.SparseVector
 import org.scalatest.FunSuite
 
-import io.github.karlhigley.neighbors.lsh.HashTableEntry
+import com.github.karlhigley.neighbors.lsh.HashTableEntry
 
 class ANNSuite extends FunSuite with TestSparkContext {
   import ANNSuite._
