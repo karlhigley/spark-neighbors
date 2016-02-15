@@ -1,4 +1,4 @@
-package com.github.karlhigley.neighbors.lsh
+package com.github.karlhigley.spark.neighbors.lsh
 
 import java.util.Random
 import scala.collection.immutable.BitSet
@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 import org.apache.spark.mllib.linalg.{ SparseVector, Vectors }
 
-import com.github.karlhigley.neighbors.linalg.RandomProjection
+import com.github.karlhigley.spark.neighbors.linalg.RandomProjection
 
 /**
  *

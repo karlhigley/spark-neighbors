@@ -1,4 +1,4 @@
-package com.github.karlhigley.neighbors.lsh
+package com.github.karlhigley.spark.neighbors.lsh
 
 import scala.collection.immutable.BitSet
 

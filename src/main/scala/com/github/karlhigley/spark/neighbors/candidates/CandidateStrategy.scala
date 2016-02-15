@@ -1,9 +1,9 @@
-package com.github.karlhigley.neighbors.candidates
+package com.github.karlhigley.spark.neighbors.candidates
 
 import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.rdd.RDD
 
-import com.github.karlhigley.neighbors.lsh.HashTableEntry
+import com.github.karlhigley.spark.neighbors.lsh.HashTableEntry
 
 /**
  * Abstract base class for approaches to identifying candidate
