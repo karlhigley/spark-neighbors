@@ -1,4 +1,4 @@
-# spark-neighbors
+# spark-neighbors [![GitHub version](https://badge.fury.io/gh/karlhigley%2Fspark-neighbors.svg)](https://badge.fury.io/gh/karlhigley%2Fspark-neighbors) [![Build Status](https://travis-ci.org/karlhigley/spark-neighbors.svg?branch=master)](https://travis-ci.org/karlhigley/spark-neighbors)
 
 Spark-based approximate nearest neighbors (ANN) using locality-sensitive hashing (LSH)
 
