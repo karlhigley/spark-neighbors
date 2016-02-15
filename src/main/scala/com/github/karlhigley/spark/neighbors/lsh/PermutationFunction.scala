@@ -1,4 +1,4 @@
-package io.github.karlhigley.neighbors.lsh
+package com.github.karlhigley.spark.neighbors.lsh
 
 import java.util.Random
 

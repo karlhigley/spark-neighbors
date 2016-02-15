@@ -1,4 +1,4 @@
-package io.github.karlhigley.neighbors.candidates
+package com.github.karlhigley.spark.neighbors.candidates
 
 import scala.util.hashing.MurmurHash3
 
@@ -6,7 +6,7 @@ import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 
-import io.github.karlhigley.neighbors.lsh.{ BitSignature, HashTableEntry, IntSignature }
+import com.github.karlhigley.spark.neighbors.lsh.{ BitSignature, HashTableEntry, IntSignature }
 
 /**
  * A banding candidate identification strategy for Minhash

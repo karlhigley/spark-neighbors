@@ -1,4 +1,4 @@
-package io.github.karlhigley.neighbors.linalg
+package com.github.karlhigley.spark.neighbors.linalg
 
 import org.apache.spark.mllib.linalg.{ SparseVector, Vectors }
 
