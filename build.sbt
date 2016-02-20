@@ -31,3 +31,45 @@ libraryDependencies ++= Seq(
 spIgnoreProvided := true
 
 parallelExecution in Test := false
+
+publishArtifact in Test := false
+
+publishMavenStyle := true
+
+spAppendScalaVersion := true
+
+spIncludeMaven := true
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (version.value.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
+
+pomExtra := (
+  <description>Spark-based approximate nearest neighbor search using locality-sensitive hashing</description>
+  <url>https://github.com/karlhigley/spark-neighbors</url>
+  <licenses>
+    <license>
+      <name>The MIT License (MIT)</name>
+	  <url>http://opensource.org/licenses/MIT</url>
+	  <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>git@github.com:karlhigley/spark-neighbors.git</url>
+    <connection>scm:git:git@github.com:karlhigley/spark-neighbors.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>karlhigley</id>
+      <name>Karl Higley</name>
+      <url>https://github.com/karlhigley</url>
+    </developer>
+  </developers>)
+
+pomIncludeRepository := { _ => false }
+
+useGpg := true
