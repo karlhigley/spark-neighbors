@@ -21,7 +21,7 @@ private[neighbors] class BandingCandidateStrategy(
    * Identify candidates by finding a signature match
    * in any band of any hash table.
    */
-  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[((Int, SparseVector), (Int, SparseVector))] = {
+  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[CandidateGroup] = {
     val bandEntries = hashTables.flatMap(entry => {
       val sigElements = entry.signature match {
         case BitSignature(values) => values.toArray
@@ -39,9 +39,6 @@ private[neighbors] class BandingCandidateStrategy(
       }
     })
 
-    bandEntries.join(bandEntries).flatMap {
-      case (_, ((id1, point1), (id2, point2))) if (id1 < id2) => Some(((id1, point1), (id2, point2)))
-      case _ => None
-    }
+    bandEntries.cogroup(bandEntries).map(_._2)
   }
 }

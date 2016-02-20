@@ -19,13 +19,16 @@ class ANNModel private[neighbors] (
     private[neighbors] val measure: DistanceMeasure
 ) extends Serializable {
 
+  type Point = (Int, SparseVector)
+  type CandidateGroup = (Iterable[Point], Iterable[Point])
+
   /**
    * Identify pairs of nearest neighbors by applying a
    * candidate strategy to the hash tables and then computing
    * the actual distance between candidate pairs.
    */
   def neighbors(quantity: Int): RDD[(Int, Array[(Int, Double)])] = {
-    val candidates = candidateStrategy.identify(hashTables).repartition(hashTables.getNumPartitions).distinct()
+    val candidates = candidateStrategy.identify(hashTables).repartition(hashTables.getNumPartitions)
     val neighbors = computeDistances(candidates)
     neighbors.topByKey(quantity)(ANNModel.ordering)
   }
@@ -34,12 +37,21 @@ class ANNModel private[neighbors] (
    * Compute the actual distance between candidate pairs
    * using the supplied distance measure.
    */
-  private def computeDistances(candidates: RDD[((Int, SparseVector), (Int, SparseVector))]): RDD[(Int, (Int, Double))] = {
-    candidates.flatMap {
-      case ((id1, vector1), (id2, vector2)) =>
-        val distance = measure.compute(vector1, vector2)
-        Array((id1, (id2, distance)), (id2, (id1, distance)))
-    }
+  private def computeDistances(candidates: RDD[CandidateGroup]): RDD[(Int, (Int, Double))] = {
+    candidates
+      .flatMap {
+        case (listA, listB) => {
+          for (
+            (id1, vector1) <- listA.iterator;
+            (id2, vector2) <- listB.iterator;
+            if id1 < id2
+          ) yield ((id1, id2), measure.compute(vector1, vector2))
+        }
+      }
+      .reduceByKey((a, b) => a)
+      .flatMap {
+        case ((id1, id2), dist) => Array((id1, (id2, dist)), (id2, (id1, dist)))
+      }
   }
 }
 
