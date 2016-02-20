@@ -1,6 +1,6 @@
 name := "spark-neighbors"
 
-organization := "io.github.karlhigley"
+organization := "com.github.karlhigley"
 
 version := "0.0.1"
 
