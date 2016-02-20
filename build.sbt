@@ -2,6 +2,8 @@ name := "spark-neighbors"
 
 organization := "com.github.karlhigley"
 
+description := "Spark-based approximate nearest neighbor search using locality-sensitive hashing"
+
 version := "0.1.0"
 
 scalaVersion := "2.10.5"
@@ -49,7 +51,6 @@ publishTo := {
 }
 
 pomExtra := (
-  <description>Spark-based approximate nearest neighbor search using locality-sensitive hashing</description>
   <url>https://github.com/karlhigley/spark-neighbors</url>
   <licenses>
     <license>
