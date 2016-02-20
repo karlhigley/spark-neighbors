@@ -13,5 +13,8 @@ import com.github.karlhigley.spark.neighbors.lsh.HashTableEntry
  * banding (for minhash LSH).
  */
 private[neighbors] abstract class CandidateStrategy {
-  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[((Int, SparseVector), (Int, SparseVector))]
+  type Point = (Int, SparseVector)
+  type CandidateGroup = (Iterable[Point], Iterable[Point])
+
+  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[CandidateGroup]
 }
