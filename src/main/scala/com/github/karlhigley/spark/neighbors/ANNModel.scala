@@ -70,7 +70,7 @@ object ANNModel {
     persistenceLevel: StorageLevel
   ): ANNModel = {
 
-    val indHashFunctions = hashFunctions.zipWithIndex
+    val indHashFunctions: Array[(_ <: LSHFunction[_], Int)] = hashFunctions.zipWithIndex
     val hashTables: RDD[_ <: HashTableEntry[_]] = points.flatMap {
       case (id, vector) =>
         indHashFunctions.map {
