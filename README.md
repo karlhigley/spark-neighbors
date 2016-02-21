@@ -13,11 +13,41 @@ Spark itself doesn't yet support locality-sensitive hashing or nearest neighbor 
 - Euclidean distance via scalar-random-projection LSH
 - Jaccard distance via Minhash LSH
 
+### Linking
+
+You can link against this library (for Spark 1.6+) in your program at the following coordinates:
+
+Using SBT:
+
+```
+libraryDependencies += "com.github.karlhigley" %% "spark-neighbors" % "0.1.0"
+```
+
+Using Maven:
+
+```xml
+<dependency>
+    <groupId>com.databricks</groupId>
+    <artifactId>spark-avro_2.10</artifactId>
+    <version>2.0.1</version>
+</dependency>
+```
+
+This library can also be added to Spark jobs launched through spark-shell or spark-submit by using the --packages command line option. For example, to include it when starting the spark shell:
+
+```
+$ bin/spark-shell --packages com.github.karlhigley:spark-neighbors_2.10:0.1.0
+```
+
+Unlike using --jars, using --packages ensures that this library and its dependencies will be added to the classpath. The --packages argument can also be used with bin/spark-submit.
+
 ### Usage
 
 ANN models are created using the builder pattern:
 
 ```scala
+import com.github.karlhigley.spark.neighbors.ANN
+
 val annModel =
   new ANN(dimensions = 1000, measure = "hamming")
     .setTables(4)
