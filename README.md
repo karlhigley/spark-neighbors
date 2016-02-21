@@ -27,9 +27,9 @@ Using Maven:
 
 ```xml
 <dependency>
-    <groupId>com.databricks</groupId>
-    <artifactId>spark-avro_2.10</artifactId>
-    <version>2.0.1</version>
+    <groupId>com.github.karlhigley</groupId>
+    <artifactId>spark-neighbors_2.10</artifactId>
+    <version>0.1.0</version>
 </dependency>
 ```
 
