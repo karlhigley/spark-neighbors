@@ -38,9 +38,11 @@ publishArtifact in Test := false
 
 publishMavenStyle := true
 
-spAppendScalaVersion := true
-
 spIncludeMaven := true
+
+licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".spark-package-credentials")
 
 publishTo := {
   val nexus = "https://oss.sonatype.org/"
