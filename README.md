@@ -4,14 +4,16 @@ Spark-based approximate nearest neighbors (ANN) using locality-sensitive hashing
 
 ### Motivation
 
-Spark itself doesn't yet support locality-sensitive hashing or nearest neighbor search. While there are LSH Spark packages available for a variety of distance measures, it's an open question how to support multiple distance measures and hashing schemes behind a unified interface.
+Spark's MLlib doesn't yet support locality-sensitive hashing or nearest neighbor search. While there are LSH Spark packages available for a variety of distance measures, it has been open question how to support multiple distance measures and hashing schemes behind a unified interface. This library presents one possible way to do that.
 
 ### Features
-- Batch computation of the nearest neighbors for each point in a dataset
-- Hamming distance via bit sampling LSH
-- Cosine distance via sign-random-projection LSH
-- Euclidean distance via scalar-random-projection LSH
-- Jaccard distance via Minhash LSH
+
+- Batch computation of the K nearest neighbors for each point in a dataset
+- Support for four distance measures:
+    - Hamming distance via bit sampling LSH
+    - Cosine distance via sign-random-projection LSH
+    - Euclidean distance via scalar-random-projection LSH
+    - Jaccard distance via Minhash LSH
 
 ### Linking
 
