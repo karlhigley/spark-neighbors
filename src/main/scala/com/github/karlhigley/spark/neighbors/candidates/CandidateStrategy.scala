@@ -14,7 +14,7 @@ import com.github.karlhigley.spark.neighbors.lsh.HashTableEntry
  */
 private[neighbors] abstract class CandidateStrategy {
   type Point = (Int, SparseVector)
-  type CandidateGroup = (Iterable[Point], Iterable[Point])
+  type CandidateGroup = Iterable[Point]
 
   def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[CandidateGroup]
 }

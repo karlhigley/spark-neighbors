@@ -39,6 +39,6 @@ private[neighbors] class BandingCandidateStrategy(
       }
     })
 
-    bandEntries.cogroup(bandEntries).map(_._2)
+    bandEntries.groupByKey().map(_._2)
   }
 }

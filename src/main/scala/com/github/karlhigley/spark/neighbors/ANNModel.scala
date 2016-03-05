@@ -20,7 +20,7 @@ class ANNModel private[neighbors] (
 ) extends Serializable {
 
   type Point = (Int, SparseVector)
-  type CandidateGroup = (Iterable[Point], Iterable[Point])
+  type CandidateGroup = Iterable[Point]
 
   /**
    * Identify pairs of nearest neighbors by applying a
@@ -40,10 +40,10 @@ class ANNModel private[neighbors] (
   private def computeDistances(candidates: RDD[CandidateGroup]): RDD[(Int, (Int, Double))] = {
     candidates
       .flatMap {
-        case (listA, listB) => {
+        case candidates => {
           for (
-            (id1, vector1) <- listA.iterator;
-            (id2, vector2) <- listB.iterator;
+            (id1, vector1) <- candidates.iterator;
+            (id2, vector2) <- candidates.iterator;
             if id1 < id2
           ) yield ((id1, id2), measure.compute(vector1, vector2))
         }

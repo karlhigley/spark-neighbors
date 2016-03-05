@@ -31,6 +31,6 @@ private[neighbors] class SimpleCandidateStrategy extends CandidateStrategy with 
       ((entry.table, MurmurHash3.arrayHash(sigElements)), (entry.id, entry.point))
     })
 
-    entries.cogroup(entries).map(_._2)
+    entries.groupByKey().map(_._2)
   }
 }
