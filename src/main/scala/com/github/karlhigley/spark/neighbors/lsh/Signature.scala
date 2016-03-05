@@ -9,21 +9,21 @@ import org.apache.spark.mllib.linalg.SparseVector
  * type of the hash signatures in its hash tables.
  */
 private[neighbors] sealed trait Signature[+T] extends Any {
-  val values: T
+  val elements: T
 }
 
 /**
  * Signature type for sign-random-projection LSH
  */
 private[neighbors] final case class BitSignature(
-  values: BitSet
+  elements: BitSet
 ) extends AnyVal with Signature[BitSet]
 
 /**
  * Signature type for scalar-random-projection LSH
  */
 private[neighbors] final case class IntSignature(
-  values: Array[Int]
+  elements: Array[Int]
 ) extends AnyVal with Signature[Array[Int]]
 
 /**
@@ -36,18 +36,28 @@ private[neighbors] sealed abstract class HashTableEntry[+S <: Signature[_]] {
   val table: Int
   val signature: S
   val point: SparseVector
+
+  def sigElements: Array[Int]
 }
 
 private[neighbors] final case class BitHashTableEntry(
-  id: Int,
-  table: Int,
-  signature: BitSignature,
-  point: SparseVector
-) extends HashTableEntry[BitSignature]
+    id: Int,
+    table: Int,
+    signature: BitSignature,
+    point: SparseVector
+) extends HashTableEntry[BitSignature] {
+  def sigElements: Array[Int] = {
+    signature.elements.toArray
+  }
+}
 
 private[neighbors] final case class IntHashTableEntry(
-  id: Int,
-  table: Int,
-  signature: IntSignature,
-  point: SparseVector
-) extends HashTableEntry[IntSignature]
+    id: Int,
+    table: Int,
+    signature: IntSignature,
+    point: SparseVector
+) extends HashTableEntry[IntSignature] {
+  def sigElements: Array[Int] = {
+    signature.elements
+  }
+}

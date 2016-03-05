@@ -23,18 +23,14 @@ private[neighbors] class BandingCandidateStrategy(
    */
   def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Product, Point)] = {
     val bandEntries = hashTables.flatMap(entry => {
-      val sigElements = entry.signature match {
-        case BitSignature(values) => values.toArray
-        case IntSignature(values) => values
-      }
-
-      val banded = sigElements.grouped(bands).zipWithIndex
+      val banded = entry.sigElements.grouped(bands).zipWithIndex
       banded.map {
         case (bandSig, band) => {
           // Arrays are mutable and can't be used in RDD keys
           // Use a hash value (i.e. an int) as a substitute
           val bandSigHash = MurmurHash3.arrayHash(bandSig)
-          ((entry.table, band, bandSigHash).asInstanceOf[Product], (entry.id, entry.point))
+          val key = (entry.table, band, bandSigHash).asInstanceOf[Product]
+          (key, (entry.id, entry.point))
         }
       }
     })
