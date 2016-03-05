@@ -28,7 +28,7 @@ class ANNModel private[neighbors] (
    * the actual distance between candidate pairs.
    */
   def neighbors(quantity: Int): RDD[(Int, Array[(Int, Double)])] = {
-    val candidates = candidateStrategy.identify(hashTables).repartition(hashTables.getNumPartitions)
+    val candidates = candidateStrategy.identify(hashTables).groupByKey(hashTables.getNumPartitions).values
     val neighbors = computeDistances(candidates)
     neighbors.topByKey(quantity)(ANNModel.ordering)
   }

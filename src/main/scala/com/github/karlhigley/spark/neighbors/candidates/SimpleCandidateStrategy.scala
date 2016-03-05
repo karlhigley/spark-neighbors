@@ -20,7 +20,7 @@ private[neighbors] class SimpleCandidateStrategy extends CandidateStrategy with 
    * Identify candidates by finding a signature match
    * in any hash table.
    */
-  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[CandidateGroup] = {
+  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Product, Point)] = {
     val entries = hashTables.map(entry => {
       val sigElements = entry.signature match {
         case BitSignature(values) => values.toArray
@@ -28,9 +28,9 @@ private[neighbors] class SimpleCandidateStrategy extends CandidateStrategy with 
       }
       // Arrays are mutable and can't be used in RDD keys
       // Use a hash value (i.e. an int) as a substitute
-      ((entry.table, MurmurHash3.arrayHash(sigElements)), (entry.id, entry.point))
+      ((entry.table, MurmurHash3.arrayHash(sigElements)).asInstanceOf[Product], (entry.id, entry.point))
     })
 
-    entries.groupByKey().map(_._2)
+    entries
   }
 }
