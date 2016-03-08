@@ -21,7 +21,7 @@ private[neighbors] class BandingCandidateStrategy(
    * Identify candidates by finding a signature match
    * in any band of any hash table.
    */
-  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[CandidateGroup] = {
+  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Product, Point)] = {
     val bandEntries = hashTables.flatMap(entry => {
       val sigElements = entry.signature match {
         case BitSignature(values) => values.toArray
@@ -34,11 +34,11 @@ private[neighbors] class BandingCandidateStrategy(
           // Arrays are mutable and can't be used in RDD keys
           // Use a hash value (i.e. an int) as a substitute
           val bandSigHash = MurmurHash3.arrayHash(bandSig)
-          ((entry.table, band, bandSigHash), (entry.id, entry.point))
+          ((entry.table, band, bandSigHash).asInstanceOf[Product], (entry.id, entry.point))
         }
       }
     })
 
-    bandEntries.cogroup(bandEntries).map(_._2)
+    bandEntries
   }
 }
