@@ -201,7 +201,7 @@ class ANN private (
         distanceMeasure = JaccardDistance
         hashFunctions = (1 to numTables).map(i =>
           MinhashFunction.generate(origDimension, signatureLength, primeModulus, random)).toArray
-        candidateStrategy = new BandingCandidateStrategy(10)
+        candidateStrategy = new BandingCandidateStrategy(numBands)
       }
       case other: Any =>
         throw new IllegalArgumentException(
