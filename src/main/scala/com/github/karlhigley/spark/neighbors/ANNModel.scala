@@ -16,7 +16,8 @@ import com.github.karlhigley.spark.neighbors.lsh.{ HashTableEntry, LSHFunction, 
 class ANNModel private[neighbors] (
     private[neighbors] val hashTables: RDD[_ <: HashTableEntry[_]],
     private[neighbors] val candidateStrategy: CandidateStrategy,
-    private[neighbors] val measure: DistanceMeasure
+    private[neighbors] val measure: DistanceMeasure,
+    private[neighbors] val numPoints: Int
 ) extends Serializable {
 
   type Point = (Int, SparseVector)
@@ -31,6 +32,30 @@ class ANNModel private[neighbors] (
     val candidates = candidateStrategy.identify(hashTables).groupByKey(hashTables.getNumPartitions).values
     val neighbors = computeDistances(candidates)
     neighbors.topByKey(quantity)(ANNModel.ordering)
+  }
+
+  /**
+   * Compute the average selectivity of the points in the
+   * dataset. (See "Modeling LSH for Performance Tuning" in CIKM '08.)
+   */
+  def avgSelectivity(): Double = {
+    val candidates = candidateStrategy.identify(hashTables).groupByKey(hashTables.getNumPartitions).values
+
+    val candidateCounts =
+      candidates
+        .flatMap {
+          case candidates => {
+            for (
+              (id1, vector1) <- candidates.iterator;
+              (id2, vector2) <- candidates.iterator
+            ) yield (id1, id2)
+          }
+        }
+        .distinct()
+        .countByKey()
+        .values
+
+    candidateCounts.map(_.toDouble / numPoints).reduce(_ + _) / numPoints
   }
 
   /**
@@ -82,7 +107,8 @@ object ANNModel {
     new ANNModel(
       hashTables,
       CandidateStrategy,
-      measure
+      measure,
+      points.count().toInt
     )
   }
 }
