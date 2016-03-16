@@ -119,3 +119,6 @@ Minhash:
 Survey papers:
 - Loic Pauleve, Herve Jegou, Laurent Amsaleg. "[Locality sensitive hashing: a comparison of hash function types and querying mechanisms.](https://hal.inria.fr/file/index/docid/567191/filename/paper.pdf)" Pattern Recognition Letters, 2010.
 - Jingdong Wang, Heng Tao Shen, Jingkuan Song, and Jianqiu Ji. "[Hashing for similarity search: A survey.](http://arxiv.org/pdf/1408.2927.pdf)" CoRR, abs/1408.2927, 2014.
+
+Performance evaluation and tuning:
+- Wei Dong, Zhe Wang, William Josephson, Moses Charikar, and Kai Li. "[Modeling LSH for performance tuning](http://www.cs.princeton.edu/cass/papers/cikm08.pdf)" CIKM, 2008.
