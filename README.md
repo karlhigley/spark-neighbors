@@ -65,9 +65,9 @@ val neighbors = model.neighbors(10)
 
 #### Distance Measures and Parameters
 
-The supported distance measures are "hamming", "cosine", "euclidean", and "jaccard". All distance measures allow the number of hash tables and the length of the computed hash signatures to be configured as above. The hashing schemes for Euclidean and Jaccard distances have some additional configurable parameters:
+The supported distance measures are "hamming", "cosine", "euclidean", "manhattan", and "jaccard". All distance measures allow the number of hash tables and the length of the computed hash signatures to be configured as above. The hashing schemes for Euclidean, Manhattan, and Jaccard distances have some additional configurable parameters:
 
-##### Euclidean Distance
+##### Euclidean and Manhattan Distances
 
 This hash function depends on a bucket or quantization width. Higher widths lead to signatures that are more similar:
 

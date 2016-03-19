@@ -57,7 +57,7 @@ private[neighbors] object SignRandomProjectionFunction {
     random: Random = new Random
   ): SignRandomProjectionFunction = {
 
-    val projection = RandomProjection.generate(originalDim, signatureLength, random)
+    val projection = RandomProjection.generateGaussian(originalDim, signatureLength, random)
     new SignRandomProjectionFunction(projection, signatureLength)
   }
 }

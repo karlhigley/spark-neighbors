@@ -19,6 +19,7 @@ val testSparkVersion = settingKey[String]("The version of Spark to test against.
 testSparkVersion := sys.props.get("spark.testVersion").getOrElse(sparkVersion.value)
 
 libraryDependencies ++= Seq(
+  "org.scalanlp" %% "breeze" % "0.12",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 
