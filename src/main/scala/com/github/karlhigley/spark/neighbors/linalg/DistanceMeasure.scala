@@ -1,5 +1,6 @@
 package com.github.karlhigley.spark.neighbors.linalg
 
+import breeze.linalg.norm
 import org.apache.spark.mllib.linalg.{ SparseVector, Vectors }
 
 import org.apache.spark.mllib.linalg.LinalgShim
@@ -44,6 +45,19 @@ private[neighbors] final object EuclideanDistance extends DistanceMeasure {
    */
   def compute(v1: SparseVector, v2: SparseVector): Double = {
     Vectors.sqdist(v1, v2)
+  }
+}
+
+private[neighbors] final object ManhattanDistance extends DistanceMeasure {
+
+  /**
+   * Compute Manhattan distance between vectors using
+   * Breeze vector operations
+   */
+  def compute(v1: SparseVector, v2: SparseVector): Double = {
+    val b1 = LinalgShim.toBreeze(v1)
+    val b2 = LinalgShim.toBreeze(v2)
+    norm(b1 - b2, 1.0)
   }
 }
 

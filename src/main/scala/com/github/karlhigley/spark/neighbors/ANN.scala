@@ -8,7 +8,7 @@ import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.storage.StorageLevel
 
 import com.github.karlhigley.spark.neighbors.candidates.{ BandingCandidateStrategy, CandidateStrategy, SimpleCandidateStrategy }
-import com.github.karlhigley.spark.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, HammingDistance, JaccardDistance }
+import com.github.karlhigley.spark.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, ManhattanDistance, HammingDistance, JaccardDistance }
 import com.github.karlhigley.spark.neighbors.lsh.LSHFunction
 import com.github.karlhigley.spark.neighbors.lsh.BitSamplingFunction
 import com.github.karlhigley.spark.neighbors.lsh.MinhashFunction
@@ -90,8 +90,8 @@ class ANN private (
    */
   def setBucketWidth(width: Double): this.type = {
     require(
-      measureName == "euclidean",
-      "Bucket width only applies when distance measure is euclidean."
+      measureName == "euclidean" || measureName == "manhattan",
+      "Bucket width only applies when distance measure is euclidean or manhattan."
     )
     bucketWidth = width
     this
@@ -183,7 +183,19 @@ class ANN private (
 
         distanceMeasure = EuclideanDistance
         hashFunctions = (1 to numTables).map(i =>
-          ScalarRandomProjectionFunction.generate(
+          ScalarRandomProjectionFunction.generateL2(
+            origDimension,
+            signatureLength,
+            bucketWidth,
+            random
+          )).toArray
+      }
+      case "manhattan" => {
+        require(bucketWidth > 0.0, "Bucket width must be greater than zero.")
+
+        distanceMeasure = ManhattanDistance
+        hashFunctions = (1 to numTables).map(i =>
+          ScalarRandomProjectionFunction.generateL1(
             origDimension,
             signatureLength,
             bucketWidth,
@@ -205,7 +217,7 @@ class ANN private (
       }
       case other: Any =>
         throw new IllegalArgumentException(
-          s"Only cosine, euclidean, and jaccard distances are supported but got $other."
+          s"Only hamming, cosine, euclidean, manhattan, and jaccard distances are supported but got $other."
         )
     }
 
