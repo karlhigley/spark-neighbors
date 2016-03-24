@@ -5,7 +5,7 @@ import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.mllib.rdd.MLPairRDDFunctions._
 import org.apache.spark.storage.StorageLevel
 
-import com.github.karlhigley.spark.neighbors.candidates.CandidateStrategy
+import com.github.karlhigley.spark.neighbors.collision.CollisionStrategy
 import com.github.karlhigley.spark.neighbors.linalg.DistanceMeasure
 import com.github.karlhigley.spark.neighbors.lsh.{ HashTableEntry, LSHFunction, Signature }
 
@@ -15,7 +15,7 @@ import com.github.karlhigley.spark.neighbors.lsh.{ HashTableEntry, LSHFunction, 
  */
 class ANNModel private[neighbors] (
     private[neighbors] val hashTables: RDD[_ <: HashTableEntry[_]],
-    private[neighbors] val candidateStrategy: CandidateStrategy,
+    private[neighbors] val collisionStrategy: CollisionStrategy,
     private[neighbors] val measure: DistanceMeasure,
     private[neighbors] val numPoints: Int
 ) extends Serializable {
@@ -25,11 +25,11 @@ class ANNModel private[neighbors] (
 
   /**
    * Identify pairs of nearest neighbors by applying a
-   * candidate strategy to the hash tables and then computing
+   * collision strategy to the hash tables and then computing
    * the actual distance between candidate pairs.
    */
   def neighbors(quantity: Int): RDD[(Int, Array[(Int, Double)])] = {
-    val candidates = candidateStrategy.identify(hashTables).groupByKey(hashTables.getNumPartitions).values
+    val candidates = collisionStrategy.apply(hashTables).groupByKey(hashTables.getNumPartitions).values
     val neighbors = computeDistances(candidates)
     neighbors.topByKey(quantity)(ANNModel.ordering)
   }
@@ -39,7 +39,7 @@ class ANNModel private[neighbors] (
    * dataset. (See "Modeling LSH for Performance Tuning" in CIKM '08.)
    */
   def avgSelectivity(): Double = {
-    val candidates = candidateStrategy.identify(hashTables).groupByKey(hashTables.getNumPartitions).values
+    val candidates = collisionStrategy.apply(hashTables).groupByKey(hashTables.getNumPartitions).values
 
     val candidateCounts =
       candidates
@@ -90,7 +90,7 @@ object ANNModel {
   def train(
     points: RDD[(Int, SparseVector)],
     hashFunctions: Array[_ <: LSHFunction[_]],
-    CandidateStrategy: CandidateStrategy,
+    collisionStrategy: CollisionStrategy,
     measure: DistanceMeasure,
     persistenceLevel: StorageLevel
   ): ANNModel = {
@@ -106,7 +106,7 @@ object ANNModel {
     hashTables.persist(persistenceLevel)
     new ANNModel(
       hashTables,
-      CandidateStrategy,
+      collisionStrategy,
       measure,
       points.count().toInt
     )

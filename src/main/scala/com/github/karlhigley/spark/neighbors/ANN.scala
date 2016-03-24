@@ -7,7 +7,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.storage.StorageLevel
 
-import com.github.karlhigley.spark.neighbors.candidates.{ BandingCandidateStrategy, CandidateStrategy, SimpleCandidateStrategy }
+import com.github.karlhigley.spark.neighbors.collision.{ BandingCollisionStrategy, CollisionStrategy, SimpleCollisionStrategy }
 import com.github.karlhigley.spark.neighbors.linalg.{ CosineDistance, DistanceMeasure, EuclideanDistance, ManhattanDistance, HammingDistance, JaccardDistance }
 import com.github.karlhigley.spark.neighbors.lsh.LSHFunction
 import com.github.karlhigley.spark.neighbors.lsh.BitSamplingFunction
@@ -164,7 +164,7 @@ class ANN private (
     persistenceLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK
   ): ANNModel = {
     var hashFunctions: Array[LSHFunction[_]] = Array()
-    var candidateStrategy: CandidateStrategy = new SimpleCandidateStrategy
+    var candidateStrategy: CollisionStrategy = new SimpleCollisionStrategy
     var distanceMeasure: DistanceMeasure = HammingDistance
     val random = new JavaRandom(randomSeed)
 
@@ -213,7 +213,7 @@ class ANN private (
         distanceMeasure = JaccardDistance
         hashFunctions = (1 to numTables).map(i =>
           MinhashFunction.generate(origDimension, signatureLength, primeModulus, random)).toArray
-        candidateStrategy = new BandingCandidateStrategy(numBands)
+        candidateStrategy = new BandingCollisionStrategy(numBands)
       }
       case other: Any =>
         throw new IllegalArgumentException(
