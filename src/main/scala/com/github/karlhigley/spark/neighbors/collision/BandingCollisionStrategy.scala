@@ -1,4 +1,4 @@
-package com.github.karlhigley.spark.neighbors.candidates
+package com.github.karlhigley.spark.neighbors.collision
 
 import scala.util.hashing.MurmurHash3
 
@@ -9,19 +9,18 @@ import org.apache.spark.storage.StorageLevel
 import com.github.karlhigley.spark.neighbors.lsh.{ BitSignature, HashTableEntry, IntSignature }
 
 /**
- * A banding candidate identification strategy for Minhash
- *
- * (See Mining Massive Datasets, Ch. 3)
+ * A banding collision strategy for candidate identification with Minhash
  */
-private[neighbors] class BandingCandidateStrategy(
+private[neighbors] class BandingCollisionStrategy(
     bands: Int
-) extends CandidateStrategy with Serializable {
+) extends CollisionStrategy with Serializable {
 
   /**
-   * Identify candidates by finding a signature match
-   * in any band of any hash table.
+   * Convert hash tables into an RDD that is "collidable" using groupByKey.
+   * The new keys contain the hash table id, the band id, and a hashed version
+   * of the banded signature.
    */
-  def identify(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Product, Point)] = {
+  def apply(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Product, Point)] = {
     val bandEntries = hashTables.flatMap(entry => {
       val banded = entry.sigElements.grouped(bands).zipWithIndex
       banded.map {
