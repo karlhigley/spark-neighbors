@@ -126,6 +126,22 @@ class ANNSuite extends FunSuite with TestSparkContext {
       }
     }
   }
+
+  test("find neighbors for a set of query points") {
+    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
+
+    val localTestPoints = TestHelpers.generateRandomPoints(100, dimensions, density)
+    val testPoints = sc.parallelize(localTestPoints.zipWithIndex.map(_.swap))
+
+    val ann =
+      new ANN(dimensions, "hamming")
+        .setTables(1)
+        .setSignatureLength(16)
+
+    val model = ann.train(points)
+    val neighbors = model.neighbors(testPoints, 10)
+    val neighborIds = neighbors.map(_._1)
+  }
 }
 
 object ANNSuite {
