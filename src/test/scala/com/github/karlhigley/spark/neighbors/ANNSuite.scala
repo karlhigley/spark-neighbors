@@ -2,6 +2,9 @@ package com.github.karlhigley.spark.neighbors
 
 import org.scalatest.FunSuite
 
+import org.apache.spark.rdd.RDD
+import org.apache.spark.mllib.linalg.SparseVector
+
 import com.github.karlhigley.spark.neighbors.lsh.HashTableEntry
 
 class ANNSuite extends FunSuite with TestSparkContext {
@@ -11,11 +14,15 @@ class ANNSuite extends FunSuite with TestSparkContext {
   val dimensions = 100
   val density = 0.5
 
-  val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
+  var points: RDD[(Int, SparseVector)] = _
+
+  override def beforeAll() {
+    super.beforeAll()
+    val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
+    points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
+  }
 
   test("compute hamming nearest neighbors as a batch") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "hamming")
         .setTables(1)
@@ -31,8 +38,6 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("compute cosine nearest neighbors as a batch") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "cosine")
         .setTables(1)
@@ -48,8 +53,6 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("compute euclidean nearest neighbors as a batch") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "euclidean")
         .setTables(1)
@@ -66,8 +69,6 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("compute manhattan nearest neighbors as a batch") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "manhattan")
         .setTables(1)
@@ -84,8 +85,6 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("compute jaccard nearest neighbors as a batch") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "jaccard")
         .setTables(1)
@@ -103,6 +102,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("with multiple hash tables neighbors don't contain duplicates") {
+    val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
     val withDuplicates = localPoints ++ localPoints
     val points = sc.parallelize(withDuplicates.zipWithIndex.map(_.swap))
 
@@ -128,10 +128,8 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("find neighbors for a set of query points") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
-    val localTestPoints = TestHelpers.generateRandomPoints(100, dimensions, density)
-    val testPoints = sc.parallelize(localTestPoints.zipWithIndex.map(_.swap))
+    val localPoints = TestHelpers.generateRandomPoints(100, dimensions, density)
+    val testPoints = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
 
     val ann =
       new ANN(dimensions, "hamming")
