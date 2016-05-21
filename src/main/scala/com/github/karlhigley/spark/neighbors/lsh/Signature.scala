@@ -32,7 +32,7 @@ private[neighbors] final case class IntSignature(
  * in a single RDD.
  */
 private[neighbors] sealed abstract class HashTableEntry[+S <: Signature[_]] {
-  val id: Int
+  val id: Long
   val table: Int
   val signature: S
   val point: SparseVector
@@ -41,7 +41,7 @@ private[neighbors] sealed abstract class HashTableEntry[+S <: Signature[_]] {
 }
 
 private[neighbors] final case class BitHashTableEntry(
-    id: Int,
+    id: Long,
     table: Int,
     signature: BitSignature,
     point: SparseVector
@@ -52,7 +52,7 @@ private[neighbors] final case class BitHashTableEntry(
 }
 
 private[neighbors] final case class IntHashTableEntry(
-    id: Int,
+    id: Long,
     table: Int,
     signature: IntSignature,
     point: SparseVector

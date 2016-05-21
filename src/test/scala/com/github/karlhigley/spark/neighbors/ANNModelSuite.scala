@@ -12,12 +12,12 @@ class ANNModelSuite extends FunSuite with TestSparkContext {
   val dimensions = 100
   val density = 0.5
 
-  var points: RDD[(Int, SparseVector)] = _
+  var points: RDD[(Long, SparseVector)] = _
 
   override def beforeAll() {
     super.beforeAll()
     val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
-    points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
+    points = sc.parallelize(localPoints).zipWithIndex.map(_.swap)
   }
 
   test("average selectivity is between zero and one") {
