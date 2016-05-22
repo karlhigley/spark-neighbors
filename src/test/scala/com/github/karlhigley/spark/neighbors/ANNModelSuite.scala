@@ -2,6 +2,9 @@ package com.github.karlhigley.spark.neighbors
 
 import org.scalatest.FunSuite
 
+import org.apache.spark.rdd.RDD
+import org.apache.spark.mllib.linalg.SparseVector
+
 import com.github.karlhigley.spark.neighbors.lsh.HashTableEntry
 
 class ANNModelSuite extends FunSuite with TestSparkContext {
@@ -9,11 +12,15 @@ class ANNModelSuite extends FunSuite with TestSparkContext {
   val dimensions = 100
   val density = 0.5
 
-  val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
+  var points: RDD[(Int, SparseVector)] = _
+
+  override def beforeAll() {
+    super.beforeAll()
+    val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
+    points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
+  }
 
   test("average selectivity is between zero and one") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "cosine")
         .setTables(1)
@@ -27,8 +34,6 @@ class ANNModelSuite extends FunSuite with TestSparkContext {
   }
 
   test("average selectivity increases with more tables") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "cosine")
         .setTables(1)
@@ -43,8 +48,6 @@ class ANNModelSuite extends FunSuite with TestSparkContext {
   }
 
   test("average selectivity decreases with signature length") {
-    val points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
-
     val ann =
       new ANN(dimensions, "cosine")
         .setTables(1)
