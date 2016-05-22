@@ -9,10 +9,10 @@ Spark's MLlib doesn't yet support locality-sensitive hashing or nearest neighbor
 ### Features
 
 - Batch computation of the K nearest neighbors for each point in a dataset
-- Support for four distance measures:
+- Support for five distance measures:
     - Hamming distance via bit sampling LSH
     - Cosine distance via sign-random-projection LSH
-    - Euclidean distance via scalar-random-projection LSH
+    - Euclidean and Manhattan distances via scalar-random-projection LSH
     - Jaccard distance via Minhash LSH
 
 ### Linking
