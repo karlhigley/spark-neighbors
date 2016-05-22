@@ -15,5 +15,5 @@ private[neighbors] abstract class LSHFunction[+T <: Signature[_]] {
   /**
    * Build a hash table entry for the supplied vector
    */
-  def hashTableEntry(id: Int, table: Int, v: SparseVector): HashTableEntry[T]
+  def hashTableEntry(id: Long, table: Int, v: SparseVector): HashTableEntry[T]
 }

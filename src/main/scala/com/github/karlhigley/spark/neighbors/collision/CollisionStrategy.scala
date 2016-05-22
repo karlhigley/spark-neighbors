@@ -13,7 +13,7 @@ import com.github.karlhigley.spark.neighbors.lsh.HashTableEntry
  * and banding (for minhash LSH).
  */
 private[neighbors] abstract class CollisionStrategy {
-  type Point = (Int, SparseVector)
+  type Point = (Long, SparseVector)
 
   def apply(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Product, Point)]
 }

@@ -160,7 +160,7 @@ class ANN private (
    * @return ANNModel containing computed hash tables
    */
   def train(
-    points: RDD[(Int, SparseVector)],
+    points: RDD[(Long, SparseVector)],
     persistenceLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK
   ): ANNModel = {
     var hashFunctions: Array[LSHFunction[_]] = Array()

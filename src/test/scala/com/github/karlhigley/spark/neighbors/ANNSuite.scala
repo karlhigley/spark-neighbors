@@ -14,12 +14,12 @@ class ANNSuite extends FunSuite with TestSparkContext {
   val dimensions = 100
   val density = 0.5
 
-  var points: RDD[(Int, SparseVector)] = _
+  var points: RDD[(Long, SparseVector)] = _
 
   override def beforeAll() {
     super.beforeAll()
     val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
-    points = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
+    points = sc.parallelize(localPoints).zipWithIndex.map(_.swap)
   }
 
   test("compute hamming nearest neighbors as a batch") {
@@ -104,7 +104,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
   test("with multiple hash tables neighbors don't contain duplicates") {
     val localPoints = TestHelpers.generateRandomPoints(numPoints, dimensions, density)
     val withDuplicates = localPoints ++ localPoints
-    val points = sc.parallelize(withDuplicates.zipWithIndex.map(_.swap))
+    val points = sc.parallelize(withDuplicates).zipWithIndex.map(_.swap)
 
     val ann =
       new ANN(dimensions, "hamming")
@@ -129,7 +129,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
 
   test("find neighbors for a set of query points") {
     val localPoints = TestHelpers.generateRandomPoints(100, dimensions, density)
-    val testPoints = sc.parallelize(localPoints.zipWithIndex.map(_.swap))
+    val testPoints = sc.parallelize(localPoints).zipWithIndex.map(_.swap)
 
     val ann =
       new ANN(dimensions, "hamming")
@@ -145,7 +145,7 @@ class ANNSuite extends FunSuite with TestSparkContext {
 object ANNSuite {
   def runAssertions(
     hashTables: Array[_ <: HashTableEntry[_]],
-    neighbors: Array[(Int, Array[(Int, Double)])]
+    neighbors: Array[(Long, Array[(Long, Double)])]
   ) = {
 
     // At least some neighbors are found

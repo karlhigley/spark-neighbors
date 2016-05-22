@@ -29,7 +29,7 @@ private[neighbors] class BitSamplingFunction(
   /**
    * Build a hash table entry for the supplied vector
    */
-  def hashTableEntry(id: Int, table: Int, v: SparseVector): BitHashTableEntry = {
+  def hashTableEntry(id: Long, table: Int, v: SparseVector): BitHashTableEntry = {
     BitHashTableEntry(id, table, signature(v), v)
   }
 }

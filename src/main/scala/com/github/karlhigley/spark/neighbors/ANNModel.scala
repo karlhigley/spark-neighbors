@@ -21,7 +21,7 @@ class ANNModel private[neighbors] (
     private[neighbors] val numPoints: Int
 ) extends Serializable {
 
-  type Point = (Int, SparseVector)
+  type Point = (Long, SparseVector)
   type CandidateGroup = Iterable[Point]
 
   /**
@@ -29,7 +29,7 @@ class ANNModel private[neighbors] (
    * collision strategy to the hash tables and then computing
    * the actual distance between candidate pairs.
    */
-  def neighbors(quantity: Int): RDD[(Int, Array[(Int, Double)])] = {
+  def neighbors(quantity: Int): RDD[(Long, Array[(Long, Double)])] = {
     val candidates = collisionStrategy.apply(hashTables).groupByKey(hashTables.getNumPartitions).values
     val neighbors = computeDistances(candidates)
     neighbors.topByKey(quantity)(ANNModel.ordering)
@@ -41,7 +41,7 @@ class ANNModel private[neighbors] (
    * only potential matches, cogrouping the two RDDs, and
    * computing candidate distances in the "normal" fashion.
    */
-  def neighbors(queryPoints: RDD[Point], quantity: Int): RDD[(Int, Array[(Int, Double)])] = {
+  def neighbors(queryPoints: RDD[Point], quantity: Int): RDD[(Long, Array[(Long, Double)])] = {
     val modelEntries = collisionStrategy.apply(hashTables)
 
     val queryHashTables = ANNModel.generateHashTable(queryPoints, hashFunctions)
@@ -80,7 +80,7 @@ class ANNModel private[neighbors] (
    * Compute the actual distance between candidate pairs
    * using the supplied distance measure.
    */
-  private def computeDistances(candidates: RDD[CandidateGroup]): RDD[(Int, (Int, Double))] = {
+  private def computeDistances(candidates: RDD[CandidateGroup]): RDD[(Long, (Long, Double))] = {
     candidates
       .flatMap {
         case group => {
@@ -101,7 +101,7 @@ class ANNModel private[neighbors] (
    * Compute the actual distance between candidate pairs
    * using the supplied distance measure.
    */
-  private def computeBipartiteDistances(candidates: RDD[(CandidateGroup, CandidateGroup)]): RDD[(Int, (Int, Double))] = {
+  private def computeBipartiteDistances(candidates: RDD[(CandidateGroup, CandidateGroup)]): RDD[(Long, (Long, Double))] = {
     candidates
       .flatMap {
         case (groupA, groupB) => {
@@ -119,14 +119,14 @@ class ANNModel private[neighbors] (
 }
 
 object ANNModel {
-  private val ordering = Ordering[Double].on[(Int, Double)](_._2).reverse
+  private val ordering = Ordering[Double].on[(Long, Double)](_._2).reverse
 
   /**
    * Train a model by computing signatures for the supplied
    * points
    */
   def train(
-    points: RDD[(Int, SparseVector)],
+    points: RDD[(Long, SparseVector)],
     hashFunctions: Array[_ <: LSHFunction[_]],
     collisionStrategy: CollisionStrategy,
     measure: DistanceMeasure,
@@ -144,7 +144,7 @@ object ANNModel {
   }
 
   def generateHashTable(
-    points: RDD[(Int, SparseVector)],
+    points: RDD[(Long, SparseVector)],
     hashFunctions: Array[_ <: LSHFunction[_]]
   ): RDD[_ <: HashTableEntry[_]] = {
     val indHashFunctions: Array[(_ <: LSHFunction[_], Int)] = hashFunctions.zipWithIndex
