@@ -8,7 +8,8 @@ Spark's MLlib doesn't yet support locality-sensitive hashing or nearest neighbor
 
 ### Features
 
-- Batch computation of the K nearest neighbors for each point in a dataset
+- Computation of nearest neighbors for each point in a dataset
+- Computation of query point nearest neighbors against a dataset
 - Support for five distance measures:
     - Hamming distance via bit sampling LSH
     - Cosine distance via sign-random-projection LSH
@@ -22,7 +23,7 @@ You can link against this library (for Spark 1.6+) in your program at the follow
 Using SBT:
 
 ```
-libraryDependencies += "com.github.karlhigley" %% "spark-neighbors" % "0.1.0"
+libraryDependencies += "com.github.karlhigley" %% "spark-neighbors" % "0.2.0"
 ```
 
 Using Maven:
@@ -31,14 +32,14 @@ Using Maven:
 <dependency>
     <groupId>com.github.karlhigley</groupId>
     <artifactId>spark-neighbors_2.10</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
 This library can also be added to Spark jobs launched through spark-shell or spark-submit by using the --packages command line option. For example, to include it when starting the spark shell:
 
 ```
-$ bin/spark-shell --packages com.github.karlhigley:spark-neighbors_2.10:0.1.0
+$ bin/spark-shell --packages com.github.karlhigley:spark-neighbors_2.10:0.2.0
 ```
 
 Unlike using --jars, using --packages ensures that this library and its dependencies will be added to the classpath. The --packages argument can also be used with bin/spark-submit.
@@ -93,14 +94,6 @@ val annModel =
     .setBands(16)
     .train(points)
 ```
-
-### Future Possibilities
-
-Would be nice to add:
-
-- Dense vector support. Currently, only sparse vectors are supported, since high dimensional data (e.g. TFIDF vectors) are likely to be sparse. It could be handy to also support dense vectors, but that will likely require optimized variants of some code paths for both dense and sparse vectors.
-
-- Distributed random projections. Currently, projection matrices must fit in worker memory. There's an open JIRA ticket to add distributed random projection to Spark's MLlib ([SPARK-7334](https://issues.apache.org/jira/browse/SPARK-7334)); in the mean time, they could also be implemented here as an alternate subclass of RandomProjection. I've previously [implemented](https://github.com/karlhigley/lexrank-summarizer/blob/master/src/main/scala/io/github/karlhigley/lexrank/SignRandomProjectionLSH.scala) arbitrarily large projection matrices via the [pooling trick](http://personal.denison.edu/~lalla/papers/online-lsh.pdf), which could also be included as an option in the future.
 
 ## References
 
