@@ -95,14 +95,6 @@ val annModel =
     .train(points)
 ```
 
-### Future Possibilities
-
-Would be nice to add:
-
-- Dense vector support. Currently, only sparse vectors are supported, since high dimensional data (e.g. TFIDF vectors) are likely to be sparse. It could be handy to also support dense vectors, but that will likely require optimized variants of some code paths for both dense and sparse vectors.
-
-- Distributed random projections. Currently, projection matrices must fit in worker memory. There's an open JIRA ticket to add distributed random projection to Spark's MLlib ([SPARK-7334](https://issues.apache.org/jira/browse/SPARK-7334)); in the mean time, they could also be implemented here as an alternate subclass of RandomProjection. I've previously [implemented](https://github.com/karlhigley/lexrank-summarizer/blob/master/src/main/scala/io/github/karlhigley/lexrank/SignRandomProjectionLSH.scala) arbitrarily large projection matrices via the [pooling trick](http://personal.denison.edu/~lalla/papers/online-lsh.pdf), which could also be included as an option in the future.
-
 ## References
 
 Sign random projection:
