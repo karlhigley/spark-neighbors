@@ -55,13 +55,6 @@ publishTo := {
 
 pomExtra := (
   <url>https://github.com/karlhigley/spark-neighbors</url>
-  <licenses>
-    <license>
-      <name>The MIT License (MIT)</name>
-	  <url>http://opensource.org/licenses/MIT</url>
-	  <distribution>repo</distribution>
-    </license>
-  </licenses>
   <scm>
     <url>git@github.com:karlhigley/spark-neighbors.git</url>
     <connection>scm:git:git@github.com:karlhigley/spark-neighbors.git</connection>
