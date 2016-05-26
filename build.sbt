@@ -4,7 +4,7 @@ organization := "com.github.karlhigley"
 
 description := "Spark-based approximate nearest neighbor search using locality-sensitive hashing"
 
-version := "0.2.0-SNAPSHOT"
+version := "0.2.0"
 
 scalaVersion := "2.10.5"
 
