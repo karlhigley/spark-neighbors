@@ -44,7 +44,9 @@ private[neighbors] final object EuclideanDistance extends DistanceMeasure {
    * MLlib's public vector distance functionality
    */
   def compute(v1: SparseVector, v2: SparseVector): Double = {
-    Vectors.sqdist(v1, v2)
+    val b1 = LinalgShim.toBreeze(v1)
+    val b2 = LinalgShim.toBreeze(v2)
+    norm(b1 - b2, 2.0)
   }
 }
 
@@ -71,7 +73,9 @@ private[neighbors] final object HammingDistance extends DistanceMeasure {
    * index to represent a set bit
    */
   def compute(v1: SparseVector, v2: SparseVector): Double = {
-    v1.indices.intersect(v2.indices).size.toDouble
+    val i1 = v1.indices.toSet
+    val i2 = v2.indices.toSet
+    (i1.union(i2).size - i1.intersect(i2).size).toDouble
   }
 }
 
