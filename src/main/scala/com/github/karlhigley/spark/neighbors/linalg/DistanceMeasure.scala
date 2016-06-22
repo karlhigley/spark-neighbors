@@ -75,7 +75,7 @@ private[neighbors] final object HammingDistance extends DistanceMeasure {
   def compute(v1: SparseVector, v2: SparseVector): Double = {
     val i1 = v1.indices.toSet
     val i2 = v2.indices.toSet
-    (i1.union(i2).size - i1.intersect(i2).size).toDouble
+    i1.union(i2).diff(i1.intersect(i2)).size.toDouble
   }
 }
 
