@@ -32,14 +32,14 @@ Using Maven:
 <dependency>
     <groupId>com.github.karlhigley</groupId>
     <artifactId>spark-neighbors_2.10</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
 This library can also be added to Spark jobs launched through spark-shell or spark-submit by using the --packages command line option. For example, to include it when starting the spark shell:
 
 ```
-$ bin/spark-shell --packages com.github.karlhigley:spark-neighbors_2.10:0.2.0
+$ bin/spark-shell --packages com.github.karlhigley:spark-neighbors_2.10:0.2.1
 ```
 
 Unlike using --jars, using --packages ensures that this library and its dependencies will be added to the classpath. The --packages argument can also be used with bin/spark-submit.
