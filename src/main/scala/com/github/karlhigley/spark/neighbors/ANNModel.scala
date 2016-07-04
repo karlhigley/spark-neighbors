@@ -47,7 +47,7 @@ class ANNModel private[neighbors] (
     val queryHashTables = ANNModel.generateHashTable(queryPoints, hashFunctions)
     val queryEntries = collisionStrategy.apply(queryHashTables)
 
-    val candidateGroups = modelEntries.cogroup(queryEntries).values
+    val candidateGroups = queryEntries.cogroup(modelEntries).values
     val neighbors = computeBipartiteDistances(candidateGroups)
     neighbors.topByKey(quantity)(ANNModel.ordering)
   }
