@@ -22,13 +22,14 @@ private[neighbors] class BandingCollisionStrategy(
    */
   def apply(hashTables: RDD[_ <: HashTableEntry[_]]): RDD[(Product, Point)] = {
     val bandEntries = hashTables.flatMap(entry => {
-      val banded = entry.sigElements.grouped(bands).zipWithIndex
+      val elements = entry.sigElements
+      val banded = elements.grouped(elements.size / bands).zipWithIndex
       banded.map {
-        case (bandSig, band) => {
+        case (bandSig, bandNum) => {
           // Arrays are mutable and can't be used in RDD keys
           // Use a hash value (i.e. an int) as a substitute
           val bandSigHash = MurmurHash3.arrayHash(bandSig)
-          val key = (entry.table, band, bandSigHash).asInstanceOf[Product]
+          val key = (entry.table, bandNum, bandSigHash).asInstanceOf[Product]
           (key, (entry.id, entry.point))
         }
       }
