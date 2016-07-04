@@ -128,17 +128,17 @@ class ANNSuite extends FunSuite with TestSparkContext {
   }
 
   test("find neighbors for a set of query points") {
-    val localPoints = TestHelpers.generateRandomPoints(100, dimensions, density)
-    val testPoints = sc.parallelize(localPoints).zipWithIndex.map(_.swap)
-
     val ann =
-      new ANN(dimensions, "hamming")
+      new ANN(dimensions, "cosine")
         .setTables(1)
-        .setSignatureLength(16)
+        .setSignatureLength(4)
 
     val model = ann.train(points)
-    val neighbors = model.neighbors(testPoints, 10)
-    val neighborIds = neighbors.map(_._1)
+
+    val queryPoints = points.sample(withReplacement = false, fraction = 0.01)
+    val approxNeighbors = model.neighbors(queryPoints, 10)
+
+    assert(approxNeighbors.count() == queryPoints.count())
   }
 }
 
